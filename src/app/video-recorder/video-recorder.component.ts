@@ -6,7 +6,6 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
   styleUrls: ['./video-recorder.component.css']
 })
 export class VideoRecorderComponent implements OnInit {
-  //Video Record and Play By Rajesh Gami
   videoElement!: HTMLVideoElement;
   recordVideoElement!: HTMLVideoElement;
   mediaVideoRecorder: any;
