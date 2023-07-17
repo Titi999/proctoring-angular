@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,7 @@ export class IdleService {
   private idleTimeThreshold: number = 30 * 1000; // 5 minutes (in milliseconds)
   interval: any
   counter: number = 0;
-
+  counterChange: EventEmitter<number> = new EventEmitter<number>();
   constructor() {
     this.resetIdleTimer();
     this.setupIdleListener();
@@ -25,6 +25,7 @@ export class IdleService {
     this.interval = setInterval(() => {
       console.log('Idle time:', this.counter);
       this.counter++;
+      this.counterChange.emit(this.counter);
     }, 1000);
   }
 

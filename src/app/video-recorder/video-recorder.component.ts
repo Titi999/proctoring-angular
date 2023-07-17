@@ -1,49 +1,58 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 
 @Component({
   selector: 'app-video-recorder',
   templateUrl: './video-recorder.component.html',
   styleUrls: ['./video-recorder.component.css']
 })
-export class VideoRecorderComponent implements OnInit {
+export class VideoRecorderComponent implements OnInit, AfterViewInit {
   videoElement!: HTMLVideoElement;
   recordVideoElement!: HTMLVideoElement;
   mediaVideoRecorder: any;
   videoRecordedBlobs!: Blob[];
   isRecording: boolean = false;
   downloadVideoUrl!: string;
+  recording = false;
   stream!: MediaStream;
   @ViewChild('recordedVideo') recordVideoElementRef!: ElementRef;
   @ViewChild('liveVideo') videoElementRef!: ElementRef;
   constructor() {}
+
+  ngAfterViewInit() {
+
+  }
+
   async ngOnInit() {
+  }
+  startVideoRecording() {
+    this.recording = !this.recording
     navigator.mediaDevices.getUserMedia({
       video: {
         width: 480
-      }
+      },
+      audio: true
     }).then(stream => {
       this.videoElement = this.videoElementRef.nativeElement;
       this.recordVideoElement = this.recordVideoElementRef.nativeElement;
       this.stream = stream;
       this.videoElement.srcObject = this.stream;
+      this.videoRecordedBlobs = [];
+      let options: any = {
+        mimeType: 'video/webm'
+      };
+      try {
+        this.mediaVideoRecorder = new MediaRecorder(this.stream, options);
+      } catch (err) {
+        console.log(err);
+      }
+      this.mediaVideoRecorder.start();
+      this.isRecording = !this.isRecording;
+      this.onDataAvailableVideoEvent();
+      this.onStopVideoRecordingEvent();
     });
   }
-  startVideoRecording() {
-    this.videoRecordedBlobs = [];
-    let options: any = {
-      mimeType: 'video/webm'
-    };
-    try {
-      this.mediaVideoRecorder = new MediaRecorder(this.stream, options);
-    } catch (err) {
-      console.log(err);
-    }
-    this.mediaVideoRecorder.start();
-    this.isRecording = !this.isRecording;
-    this.onDataAvailableVideoEvent();
-    this.onStopVideoRecordingEvent();
-  }
   stopVideoRecording() {
+    this.recording = !this.recording
     this.mediaVideoRecorder.stop();
     this.isRecording = !this.isRecording;
   }

@@ -1,6 +1,8 @@
 <div style="text-align:center">
   <h1 style="margin-bottom:30px;">Video Recorder</h1>
-  <video class="video" #liveVideo autoplay controls></video>
+  <div *ngIf="recording">
+    <video class="video" #liveVideo autoplay controls></video>
+  </div>
   <span class="m-1"></span>
   <video class="video" style="width:480px !important;" controls #recordedVideo></video>
   <br>

@@ -1,0 +1,16 @@
+.hidden {
+  display: none;
+}
+
+.btn {
+  padding: 1rem;
+  background-color: green;
+  color: white;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: red;
+}

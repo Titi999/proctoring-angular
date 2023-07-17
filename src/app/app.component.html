@@ -1,11 +1,19 @@
-<div>
-  The tab is in focus.
-</div>
-
+<section>
+  <div *ngIf="counter" class="tabFocus">
+    You have recorded a total tab loss of {{counter}} seconds
+  </div>
+  <div *ngIf="idleTime" class="tabFocus">
+    You have recorded a total idle time of {{idleTime}} seconds
+  </div>
+  <div class="screenshotContainer">
+    <button (click)="captureScreen()" class="screenshot">Screenshot</button>
+  </div>
 
   <div *ngIf="screenshotUrl">
     Screenshot captured: <img [src]="screenshotUrl" width="200px" height="200px"/>
   </div>
-<app-video-recorder></app-video-recorder>
+  <app-video-recorder></app-video-recorder>
+</section>
+
 
 
