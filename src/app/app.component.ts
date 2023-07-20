@@ -59,7 +59,6 @@ export class AppComponent implements OnInit{
       // time = setTimeout(logout, 3000)
     }
   };
-
   focusCounter() {
     this.interval = setInterval(() => {
       this.counter++;
@@ -124,53 +123,56 @@ export class AppComponent implements OnInit{
   // }
 
   captureScreen() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-      // @ts-ignore
-      navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: 'monitor' } })
-        .then(stream => {
-          const videoTrack = stream.getVideoTracks()[0];
-
-          // Create a video element to display the screen capture
-          const videoElement = document.createElement('video');
-          videoElement.srcObject = new MediaStream([videoTrack]);
-          videoElement.autoplay = true;
-
-          // Append the video element to the body (or any other desired container)
-          document.body.appendChild(videoElement);
-
-          // Create a canvas element to capture the video frame
-          const canvasElement = document.createElement('canvas');
-          const context = canvasElement.getContext('2d');
-
-          // Wait for the video to load and play
-          videoElement.addEventListener('playing', () => {
-            // Set the canvas dimensions to match the video element
-            canvasElement.width = videoElement.videoWidth;
-            canvasElement.height = videoElement.videoHeight;
-
-            // Draw the current video frame on the canvas
-            context?.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-
-            // Convert canvas to image
-            const screenshot = canvasElement.toDataURL('image/png');
-
-            // Open the screenshot in a new tab (optional)
-            // const newTab = window.open();
-            // newTab.document.body.innerHTML = '<img src="' + screenshot + '" />';
-            this.screenshotUrl = screenshot;
-
-            // Stop the screen capture
-            videoTrack.stop();
-            videoElement.remove();
-            canvasElement.remove();
-          });
-        })
-        .catch(error => {
-          alert("User has denied access to screen sharing")
-        });
-    } else {
-      console.error('Screen capture API is not supported.');
-    }
+    this.tabDetectionService.shareScreen().then((value:any) => {
+      console.log('Screen capture', value);
+    })
+    // if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+    //   // @ts-ignore
+    //   navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: 'monitor' } })
+    //     .then(stream => {
+    //       const videoTrack = stream.getVideoTracks()[0];
+    //
+    //       // Create a video element to display the screen capture
+    //       const videoElement = document.createElement('video');
+    //       videoElement.srcObject = new MediaStream([videoTrack]);
+    //       videoElement.autoplay = true;
+    //
+    //       // Append the video element to the body (or any other desired container)
+    //       document.body.appendChild(videoElement);
+    //
+    //       // Create a canvas element to capture the video frame
+    //       const canvasElement = document.createElement('canvas');
+    //       const context = canvasElement.getContext('2d');
+    //
+    //       // Wait for the video to load and play
+    //       videoElement.addEventListener('playing', () => {
+    //         // Set the canvas dimensions to match the video element
+    //         canvasElement.width = videoElement.videoWidth;
+    //         canvasElement.height = videoElement.videoHeight;
+    //
+    //         // Draw the current video frame on the canvas
+    //         context?.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+    //
+    //         // Convert canvas to image
+    //         const screenshot = canvasElement.toDataURL('image/png');
+    //
+    //         // Open the screenshot in a new tab (optional)
+    //         // const newTab = window.open();
+    //         // newTab.document.body.innerHTML = '<img src="' + screenshot + '" />';
+    //         this.screenshotUrl = screenshot;
+    //
+    //         // Stop the screen capture
+    //         videoTrack.stop();
+    //         videoElement.remove();
+    //         canvasElement.remove();
+    //       });
+    //     })
+    //     .catch(error => {
+    //       alert("User has denied access to screen sharing")
+    //     });
+    // } else {
+    //   console.error('Screen capture API is not supported.');
+    // }
   }
 
 
