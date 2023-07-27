@@ -11,6 +11,7 @@ export class TabDetectionService {
   private tabStatusSource = new Subject<boolean>();
   tabStatus$ = this.tabStatusSource.asObservable();
   private Sharescreen = new Subject<boolean>()
+  private screenStream: MediaStream | null = null;
 
   constructor() {
     this.initializeTabDetection();
@@ -40,11 +41,12 @@ export class TabDetectionService {
         }
 
       }).then((stream:any) => {
+        this.screenStream = stream
+        console.log(stream)
         const videoTrack = stream.getVideoTracks()[0];
         resolve(videoTrack);
         videoTrack.onended = () => {
           this.stopScreenShare();
-
 
         };
 
@@ -63,17 +65,37 @@ export class TabDetectionService {
 
   }
 
-  // public captureScreenshot(): void {
-  //   const body = document.querySelector('body');
-  //   html2canvas(body!).then(canvas => {
-  //     // Convert canvas to image URL
-  //     const screenshotUrl = canvas.toDataURL();
-  //
-  //     // Send the screenshotUrl to a server or perform any desired actions
-  //     console.log('Screenshot captured:', screenshotUrl);
-  //   });
-  // }
+  public takeScreenshot() {
+    if (!this.screenStream) {
+      console.log('No shared screen stream available.');
+      return null;
+    }
+    const videoElement = document.createElement('video');
+    videoElement.srcObject = this.screenStream;
+    videoElement.autoplay = true;
+    videoElement.style.position = 'fixed';
+    videoElement.style.left = '0';
+    videoElement.style.top = '0';
+    videoElement.style.width = '100%';
+    videoElement.style.height = '100%';
+    videoElement.style.zIndex = '999999';
+    videoElement.style.pointerEvents = 'none';
+    document.body.appendChild(videoElement);
 
+    return new Promise<string>((resolve) => {
+      videoElement.onloadedmetadata = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const screenshotDataUrl = canvas.toDataURL('image/png');
+        document.body.removeChild(videoElement);
+        resolve(screenshotDataUrl);
+      };
+    });
+
+  }
   public captureScreenshot(): Promise<string> {
     const body = document.querySelector('body');
     return new Promise<string>((resolve, reject) => {

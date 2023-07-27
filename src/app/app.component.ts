@@ -1,6 +1,8 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnInit} from '@angular/core';
 import {TabDetectionService} from "./tab-detection.service";
 import {IdleService} from "./idle-service.service";
+import {Papa} from "ngx-papaparse";
+import {GuidedTour, GuidedTourService} from "ngx-guided-tour";
 
 
 @Component({
@@ -8,7 +10,7 @@ import {IdleService} from "./idle-service.service";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit, AfterViewInit{
   isTabInFocus = true;
   screenshotUrl: string | null = null;
   interval: any
@@ -16,9 +18,25 @@ export class AppComponent implements OnInit{
   idleTime: number = 0;
 
   constructor(private tabDetectionService: TabDetectionService,
-              private idleService: IdleService) {}
+              private idleService: IdleService,
+              private papa: Papa,
+              private tourService: GuidedTourService) {}
+
+
+  guidedTour: GuidedTour = {
+    tourId: 'tour1',
+    useOrb: false,
+    steps: [
+      {selector: '#test', title: 'Test title', content: 'Test condfdfgdfgdfgdfgdfgdfgdfgdgdgdfgdftent'}
+    ]
+  }
+  ngAfterViewInit() {
+    this.tourService.startTour(this.guidedTour)
+  }
 
   ngOnInit() {
+    console.log("Yes")
+
     navigator.mediaDevices.enumerateDevices().then(device=>{console.log(device)})
     this.idleTime = this.idleService.counter
     // Subscribe to the counter change event
@@ -49,7 +67,6 @@ export class AppComponent implements OnInit{
   inactivityTime() {
     let time: any;
     window.onload = resetTimer;
-    console.log(time)
     // DOM Events
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
@@ -122,6 +139,13 @@ export class AppComponent implements OnInit{
   //   }
   // }
 
+  screenshot() {
+    this.tabDetectionService.takeScreenshot()?.then((response: any) => {
+      console.log(response);
+      this.screenshotUrl = response
+    })
+  }
+
   captureScreen() {
     this.tabDetectionService.shareScreen().then((value:any) => {
       console.log('Screen capture', value);
@@ -176,6 +200,16 @@ export class AppComponent implements OnInit{
   }
 
 
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    this.papa.parse(file,{
+      header: true,
 
+      complete: (result) => {
+        console.log('Parsed: ', result);
+
+      }
+    });
+  }
 
 }

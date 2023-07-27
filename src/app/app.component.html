@@ -6,7 +6,8 @@
     You have recorded a total idle time of {{idleTime}} seconds
   </div>
   <div class="screenshotContainer">
-    <button (click)="captureScreen()" class="screenshot">Screenshot</button>
+    <button (click)="captureScreen()" class="screenshot">Share screen</button>
+    <button (click)="screenshot()" class="screenshot">Screenshot</button>
   </div>
 
   <div *ngIf="screenshotUrl">
@@ -14,6 +15,10 @@
   </div>
   <app-video-recorder></app-video-recorder>
 </section>
+
+<input id="test" type=file (change)="onFileChange($event)">
+<ngx-guided-tour></ngx-guided-tour>
+<app-circular-progress/>
 
 
 
